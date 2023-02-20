@@ -6,58 +6,6 @@ import (
 	"net/http"
 )
 
-type Route struct {
-	path        string
-	httpMethods []string
-	handleFunc  func(w http.ResponseWriter, r *http.Request)
-}
-
-func NewRoute(path string, httpMethods []string, handleFunc http.HandlerFunc) Route {
-	return Route{
-		path:        path,
-		httpMethods: httpMethods,
-		handleFunc:  handleFunc,
-	}
-}
-
-func (r Route) Path() string {
-	return r.path
-}
-
-func (r Route) HttpMethods() []string {
-	return r.httpMethods
-}
-
-func (r Route) HandleFunc() func(w http.ResponseWriter, r *http.Request) {
-	return r.handleFunc
-}
-
-type WebServerConfig struct {
-	port        string
-	contextPath string
-	routes      []Route
-}
-
-func NewWebServerConfig(port string, contextPath string, routes []Route) WebServerConfig {
-	return WebServerConfig{
-		port:        port,
-		contextPath: contextPath,
-		routes:      routes,
-	}
-}
-
-func (w WebServerConfig) Port() string {
-	return w.port
-}
-
-func (w WebServerConfig) ContextPath() string {
-	return w.contextPath
-}
-
-func (w WebServerConfig) Routes() []Route {
-	return w.routes
-}
-
 type WebServer interface {
 	Serve()
 	Stop()
