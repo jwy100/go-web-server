@@ -13,7 +13,7 @@ func healthEndpointHandler(w http.ResponseWriter, r *http.Request) {
 }
 func TestHealthEndpointReturnsOk(t *testing.T) {
 
-	s := NewStaticWebServer(WebServerConfig{port: "8090", contextPath: "/", routes: []Route{NewRoute("/health", []string{"GET"}, healthEndpointHandler)}})
+	s := NewStaticWebServer(WebServerConfig{port: "8090", contextPath: "/", routes: []Route{NewRoute("/health", "GET", healthEndpointHandler)}})
 	go s.Serve()
 	defer s.Stop()
 
@@ -29,5 +29,20 @@ func TestHealthEndpointReturnsOk(t *testing.T) {
 
 	if string(resBody) != "OK" {
 		t.Fatalf("Expected OK, but actual was %s", resBody)
+	}
+}
+
+func TestUnmappedPathReturns404(t *testing.T) {
+	s := NewStaticWebServer(WebServerConfig{port: "8090", contextPath: "/", routes: []Route{NewRoute("/health", "GET", healthEndpointHandler)}})
+	go s.Serve()
+	defer s.Stop()
+
+	res, err := http.Get("http://localhost:8090/unmapped")
+	if err != nil {
+		t.Fatal("HTTP request failed")
+	}
+
+	if res.StatusCode != 404 {
+		t.Fatalf("Expected 404, but actual was %v", res.StatusCode)
 	}
 }

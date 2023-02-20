@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 )
 
@@ -36,26 +35,15 @@ func (s StaticWebServer) Serve() {
 }
 
 func (s StaticWebServer) BaseHandler(w http.ResponseWriter, r *http.Request) {
-	// use a strategy to get the handler func given a request,
-	// then use the handler func and return a response
 	path := r.URL.Path
 	method := r.Method
 	for _, route := range s.config.Routes() {
-		if route.Path() == path && contains(route.HttpMethods(), method) {
+		if route.Path() == path && route.HttpMethod() == method {
 			route.handleFunc(w, r)
 			return
 		}
 	}
-	fmt.Fprintf(w, "404 Not Found")
-}
-
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
+	http.NotFound(w, r)
 }
 
 func (s StaticWebServer) Config() WebServerConfig {
@@ -64,6 +52,6 @@ func (s StaticWebServer) Config() WebServerConfig {
 
 func (s StaticWebServer) Stop() {
 	if err := s.server.Shutdown(context.TODO()); err != nil {
-		panic(err) // failure/timeout shutting down the server gracefully
+		panic(err)
 	}
 }
