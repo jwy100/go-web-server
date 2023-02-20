@@ -5,7 +5,7 @@ import "net/http"
 type Route struct {
 	path       string
 	httpMethod string
-	handleFunc func(w http.ResponseWriter, r *http.Request)
+	handleFunc http.HandlerFunc
 }
 
 func NewRoute(path string, httpMethod string, handleFunc http.HandlerFunc) Route {
@@ -24,6 +24,6 @@ func (r Route) HttpMethod() string {
 	return r.httpMethod
 }
 
-func (r Route) HandleFunc() func(w http.ResponseWriter, r *http.Request) {
+func (r Route) HandleFunc() http.HandlerFunc {
 	return r.handleFunc
 }
